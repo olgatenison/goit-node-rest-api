@@ -5,6 +5,7 @@ import {
   addContact,
   updContacts,
 } from "../services/contactsServices.js";
+
 import {
   createContactSchema,
   updateContactSchema,
@@ -26,9 +27,7 @@ export const getOneContact = async (req, res) => {
     const { id } = req.params;
     const contact = await getContactById(id);
     if (!contact) {
-      return res.status(404).json({
-        message: "Contact not found",
-      });
+      throw HttpError(404);
     }
     res.status(200).json(contact);
   } catch (error) {
