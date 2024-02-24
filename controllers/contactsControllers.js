@@ -1,5 +1,6 @@
+import Contact from "../db/contact.js";
+
 import {
-  listContact,
   getContactById,
   removeContact,
   addContact,
@@ -13,7 +14,7 @@ import {
 
 export const getAllContacts = async (req, res) => {
   try {
-    const contacts = await listContact();
+    const contacts = await Contact.find();
     res.status(200).json(contacts);
   } catch (error) {
     res.status(500).json({
@@ -57,7 +58,7 @@ export const createContact = async (req, res) => {
     if (validationResult.error) {
       return res.status(400).json({ message: validationResult.error.message });
     }
-    const newContact = await addContact(req.body);
+    const newContact = await Contact.create(req.body);
     res.status(201).json(newContact);
   } catch (error) {
     res.status(500).json({
