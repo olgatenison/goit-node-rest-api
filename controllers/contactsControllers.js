@@ -8,21 +8,19 @@ import {
 
 import {} from "../schemas/contactsSchemas.js";
 
-// import {
-//   listContact,
-//   getContactById,
-//   removeContact,
-//   addContact,
-//   updContacts,
-// } from "../services/contactsServices.js";
-
 export const getAllContacts = async (req, res) => {
   try {
-    const contacts = await Contact.find();
+    const { _id: owner } = req.user;
+    const { page = 1, limit = 10 } = req.query;
+    const skip = (page - 1) * limit;
+    const contacts = await Contact.find({ owner }, { skip, limit }).populate(
+      "owner",
+      "name email"
+    );
     res.status(200).json(contacts);
   } catch (error) {
     res.status(500).json({
-      message: "Server error",
+      message: "Server error ",
     });
   }
 };

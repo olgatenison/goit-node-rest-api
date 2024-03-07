@@ -1,4 +1,5 @@
 import express from "express";
+import { authenticate } from "../helpers/authenticate.js";
 import {
   getAllContacts,
   getOneContact,
@@ -10,16 +11,16 @@ import {
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", authenticate, getAllContacts);
 
-contactsRouter.get("/:id", getOneContact);
+contactsRouter.get("/:id", authenticate, getOneContact);
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.delete("/:id", authenticate, deleteContact);
 
-contactsRouter.post("/", createContact);
+contactsRouter.post("/", authenticate, createContact);
 
-contactsRouter.put("/:id", updateContact);
+contactsRouter.put("/:id", authenticate, updateContact);
 
-contactsRouter.patch("/:id/favorite", updateFavorite);
+contactsRouter.patch("/:id/favorite", authenticate, updateFavorite);
 
 export default contactsRouter;
