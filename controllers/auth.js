@@ -6,11 +6,18 @@ import jwt from "jsonwebtoken";
 dotenv.config();
 const { SECRET_KEY } = process.env;
 
+import gravatar from "gravatar";
+import fs from "fs/promises";
+import path from "path";
+import Jimp from "jimp";
+
 import Joi from "joi";
 import { User } from "../db/user.js";
 import { ctrlWrapper } from "../helpers/ctrlWrapper.js";
 // import { HttpError } from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
+
+// const avatarsDir = path.join(_dirname, "../", "public", "avatars");
 
 // Обработчик регистрации пользователя
 const register = async (req, res) => {
@@ -22,9 +29,15 @@ const register = async (req, res) => {
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email);
+
   //   const compareResult = await bcrypt.compare(password, hashPassword );
   // беремо захешований пароль і його зберігаємо
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   res.status(201).json(newUser);
 };
@@ -74,9 +87,28 @@ const logout = async (req, res) => {
   });
 };
 
+const updateAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tmpUpload, originalname } = req.file;
+  const filename = `${_id}_${originalname}`;
+  const resultUpload = `./public/avatars/${filename}`;
+  await fs.rename(tmpUpload, resultUpload);
+
+  const img = await Jimp.read(resultUpload);
+
+  await img.resize(250, 250).write(resultUpload);
+
+  const avatarURL = path.join(resultUpload, filename);
+  await User.findByIdAndUpdate(_id, { avatarURL });
+  res.json({
+    avatarURL,
+  });
+};
+
 export default {
   register: ctrlWrapper(register),
   login: ctrlWrapper(login),
   getCurrent: ctrlWrapper(getCurrent),
   logout: ctrlWrapper(logout),
+  updateAvatar: ctrlWrapper(updateAvatar),
 };
