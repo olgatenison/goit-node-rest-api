@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { handleMongooseError } from "../helpers/handleMongooseError.js";
 import Joi from "joi";
+import gravatar from "gravatar";
 
 export const emailRegaxp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
 
@@ -29,6 +30,11 @@ export const userSchema = new Schema(
     token: {
       type: String,
       default: null,
+    },
+    avatarURL: {
+      type: String,
+      default: gravatar.url(),
+      // required: true,
     },
   },
   { versionKey: false, timestamps: true }
