@@ -2,8 +2,9 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 
+import dotenv from "dotenv";
+import sgMail from "@sendgrid/mail";
 import authRouter from "./routes/auth.js";
 import contactsRouter from "./routes/contactsRouter.js";
 
@@ -11,8 +12,10 @@ dotenv.config();
 
 const app = express();
 
-const { DB_HOST, PORT = 3004 } = process.env;
+const { DB_HOST, PORT = 3004, SENDGRID_API_KEY } = process.env;
 mongoose.set("strictQuery", true);
+
+// sgMail.setApiKey(SENDGRID_API_KEY);
 
 mongoose
   .connect(DB_HOST)
